@@ -6,6 +6,6 @@ int main(int argc, char* argv[]){
     for (int i = 0; i < n; i++){
         ret = ret * 2;
     }
-    printf("%d", ret - 1);
+    printf("%d\n", ret - 1);
     return ret - 1;
 }
