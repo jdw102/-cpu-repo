@@ -8,5 +8,4 @@ int main(int argc, char* argv[]){
         ret = (ret * 2);
     }
     printf("%d\n", ret - 1);
-    return ret - 1;
-}
+    return 0;
