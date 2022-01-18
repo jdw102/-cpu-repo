@@ -5,7 +5,7 @@ int function(int n){
     if (n == 0){
         return -2;
     }
-    return 3 * n - ( 2 * function(n - 1)) - 2;
+    return (3 * n) - ( 2 * function(n - 1)) - 2;
 }
 
 
