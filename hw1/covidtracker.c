@@ -1,11 +1,11 @@
 #include<stdio.h>
 #include<stdlib.h>
 
-typedef struct person {
+struct person {
     char name[];
-    struct* person a;
-    struct* person b;
-}person_t
+    struct person* a;
+    struct person* b;
+}
 
 int main(int argc, char* argv[]){
         char* filename = arv[1];
