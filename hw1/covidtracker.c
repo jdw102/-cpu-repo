@@ -15,7 +15,8 @@ int main(int argc, char* argv[]){
             return 1;
         }
         int size = 0;
-        for (c=getc(fp; c != EOF; c = getc(fp)){
+        char c;
+        for (c=getc(fp); c != EOF; c = getc(fp)){
             if (c == '\n'){
                 size++;
             }
