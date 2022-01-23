@@ -2,13 +2,13 @@
 #include<stdlib.h>
 
 struct person {
-    char name[];
+    char name[30];
     struct person* a;
     struct person* b;
-}
+};
 
 int main(int argc, char* argv[]){
-        char* filename = arv[1];
+        char* filename = argv[1];
         FILE *fp = fopen(filename, "r");
         if (fp == NULL){
             printf("ERROR: COULD NOT OPEN FILE");
