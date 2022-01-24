@@ -73,6 +73,7 @@ int main(int argc, char* argv[]){
                 final = previous;
                 break;
             }
+            printf("%s", currname);
             struct person* p = (struct person*) malloc(sizeof(struct person*));
             if (c == ' '){
                 if (search(previous, currname) == true){
@@ -98,8 +99,3 @@ int main(int argc, char* argv[]){
         return 0;  
 }
 
-
-
-void sortlist(struct person* head){
-
-}
