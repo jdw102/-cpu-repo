@@ -70,7 +70,7 @@ int main(int argc, char* argv[]){
                 break;
             }
             if (c == ' '){
-                if (search(currname) == true){
+                if (search(previous, currname) == true){
                     continue
                 }
                 else{
@@ -80,7 +80,7 @@ int main(int argc, char* argv[]){
             }
             if (c == '\n'){
                 if (search(currname) == true){
-                    mutate(currname, previous->name);
+                    mutate(previous, currname, previous->name);
                 }
                 else{
                     struct person* p = (struct person*) malloc(sizeof(struct person*));
