@@ -3,12 +3,12 @@
 #include<string.h>
 
 struct person {
-    char* name[30];
+    char name[30];
     struct person* a[2];
     struct person* next; 
 };
 
-bool search(struct person* head, char* target[]){
+bool search(struct person* head, char target[]){
     while (head != null){
         if (strcmp(target, head->name) == 0){
             return true;
@@ -18,7 +18,7 @@ bool search(struct person* head, char* target[]){
     return false;
 }
 
-void mutate(struct person* head, char* target[], char* victim[]){
+void mutate(struct person* head, char target[], char victim[]){
     while(head != null){
         if(strcmp(target, head->name) == 0){
             if (a[0] = NULL){
@@ -75,7 +75,7 @@ int main(int argc, char* argv[]){
                 }
                 else{
                     struct person* p = (struct person*) malloc(sizeof(struct person*));
-                    strcpy(p->name, currname[0]);
+                    strcpy(p->name, currname);
                 }
             }
             if (c == '\n'){
