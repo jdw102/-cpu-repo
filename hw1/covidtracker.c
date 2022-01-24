@@ -25,7 +25,7 @@ void mutate(struct person* head, char target[], char victim[]){
                 head->a[0] = victim;
             }
             else if(strcmp(head->a[0], victim) > 0){
-                char* temp[0];
+                char* temp;
                 temp = head->a[0];
                 head->a[0] = victim;
                 head->a[1] = temp;
