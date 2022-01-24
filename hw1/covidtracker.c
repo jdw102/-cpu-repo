@@ -3,7 +3,7 @@
 #include<string.h>
 
 struct person {
-    char name[30];
+    char *name;
     char *a[2];
     struct person* next; 
 };
@@ -25,7 +25,7 @@ void mutate(struct person* head, char target[], char victim[]){
                 head->a[0] = victim;
             }
             else if(strcmp(head->a[0], victim) > 0){
-                char* temp[30];
+                char* temp[0];
                 temp = head->a[0];
                 head->a[0] = victim;
                 head->a[1] = temp;
@@ -59,11 +59,15 @@ int main(int argc, char* argv[]){
         char c;
         while (true){
             char currname[30] = "";
+            int i = 0;
             for (c=getc(f1); c != EOF; c = getc(f1)){
                 if (c == ' ' || c == '\n'){
+                    i = 0;
                     break;
                 }
-                currname += c;
+                currname[i] = c;
+                i++;
+
             }
             if (strcmp(currname, "DONE") == 0){
                 final = previous;
