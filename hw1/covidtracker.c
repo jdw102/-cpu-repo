@@ -4,34 +4,34 @@
 
 struct person {
     char name[30];
-    struct person* a[2];
+    char *a[2];
     struct person* next; 
 };
 
 bool search(struct person* head, char target[]){
-    while (head != null){
+    while (head != NULL){
         if (strcmp(target, head->name) == 0){
             return true;
         }
-        head = head.next;
+        head = head->next;
     }
     return false;
 }
 
 void mutate(struct person* head, char target[], char victim[]){
-    while(head != null){
+    while(head != NULL){
         if(strcmp(target, head->name) == 0){
-            if (a[0] = NULL){
-                a[0] = victim;
+            if (head->a[0] = NULL){
+                head->a[0] = victim;
             }
             else if(strcmp(head->a[0], victim) > 0){
                 char* temp[30];
-                temp = a[0];
-                a[0] = victim;
-                a[1] = temp;
+                temp = head->a[0];
+                head->a[0] = victim;
+                head->a[1] = temp;
             }
             else {
-                a[1] = victim;
+                head->a[1] = victim;
             }
         }
         head = head->next;
@@ -69,21 +69,20 @@ int main(int argc, char* argv[]){
                 final = previous;
                 break;
             }
+            struct person* p = (struct person*) malloc(sizeof(struct person*));
             if (c == ' '){
                 if (search(previous, currname) == true){
-                    continue
+                    continue;
                 }
                 else{
-                    struct person* p = (struct person*) malloc(sizeof(struct person*));
                     strcpy(p->name, currname);
                 }
             }
             if (c == '\n'){
-                if (search(currname) == true){
+                if (search(previous, currname) == true){
                     mutate(previous, currname, previous->name);
                 }
                 else{
-                    struct person* p = (struct person*) malloc(sizeof(struct person*));
                     p->name = currname;
                     p->a[0] = previous->name;
                 }
