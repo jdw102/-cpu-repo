@@ -96,9 +96,6 @@ int main(int argc, char* argv[]){
                     char copyname[30];
                     strcpy(copyname, currname);
                     p->name = copyname;
-                    p->next = previous;
-                    printf("Current node (p): %s %s %s\n", p->name, p->a[0], p->a[1]);
-                    previous = p;
                 }
             }
             if (c == '\n'){
@@ -115,12 +112,12 @@ int main(int argc, char* argv[]){
                     strcpy(copylist, previous->name);
                     p->name = copyname;
                     p->a[0] = copylist;
-                    p->next = previous;
-                    printf("Current node (p): %s %s %s\n", p->name, p->a[0], p->a[1]);
-                    previous = p;
                 }
             }
             // printf("%s %s %s\n", p->name, p->a[0], p->a[1]);
+            p->next = previous;
+            printf("Current node (p): %s %s %s\n", p->name, p->a[0], p->a[1]);
+            previous = p;
             iter++;
         }
         // printlist(final);
