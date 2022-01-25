@@ -88,7 +88,7 @@ int main(int argc, char* argv[]){
             }
             if (c == '\n'){
                 if (grabbed == NULL){
-                    printf("test\n");
+                    
                     struct person* p = (struct person*) malloc(sizeof(struct person));
                     char copyname[30];
                     char copylist[30];
