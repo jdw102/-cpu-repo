@@ -3,8 +3,11 @@
 #include<string.h>
 
 struct person {
-    char *name;
-    char *a[2];
+    char name[30];
+    char p1[30];
+    char p2[30];
+    int p1count = 0;
+    int p2count = 0;
     struct person* next;
 };
 
@@ -15,22 +18,21 @@ struct person* grab(struct person* head, char target[]){
     n= NULL;
     temp = head;
     while (temp != NULL){
-        printf("Scanning: %s\n", temp->name);
+        // printf("Scanning: %s\n", temp->name);
         if (strcmp(target, temp->name) == 0){
-            printf("found\n");
+            // printf("found\n");
             return temp;
         }
         temp = temp->next;
     }
-    printf("not found\n");
-    printf("test\n");
+    // printf("not found\n");
     return n;
 }
 
 
 void printlist(struct person* head){
     while (head != NULL){
-        printf("%s %s %s\n", head->name, head->a[0], head->a[1]);
+        printf("%s %s %s\n", head->name, head->p1, head->p2);
         head = head->next;
     }
 }
@@ -43,7 +45,6 @@ int main(int argc, char* argv[]){
             printf("ERROR: COULD NOT OPEN FILE");
             return 1;
         }
-        int size = 0;
         struct person* final = (struct person*) malloc(sizeof(struct person));
         struct person* previous = (struct person*) malloc(sizeof(struct person));
         previous = NULL;
@@ -51,7 +52,6 @@ int main(int argc, char* argv[]){
         char c;
         int iter = 0;
         while (true){
-            printf("Next person\n");
             // if (iter == 1){
             //     printf("Previous node: %s %s %s\n", previous->name, previous->a[1], previous->a[2]);
             // }
@@ -65,51 +65,48 @@ int main(int argc, char* argv[]){
                 currname[i] = c;
                 i++;
             }
-            printf("Currname: %s\n", currname);
+            // printf("Currname: %s\n", currname);
             if (strcmp(currname, "DONE") == 0){
                 final = previous;
                 break;
             }
-            struct person* grabbed = (struct person*) malloc(sizeof(struct person));
-            grabbed = grab(previous, currname);
 
             if (c == ' '){
-                if (grabbed == NULL){
-                    struct person* p = (struct person*) malloc(sizeof(struct person));
-                    char copyname[30];
-                    strcpy(copyname, currname);
-                    p->name = copyname;
-                    p->next = previous;
-                    previous = p;
+                // printf("new victim\n");
+                struct person* p = (struct person*) malloc(sizeof(struct person));
+                strcpy(p->name, currname);
+                p->next = previous;
+                previous = p;
                 }
-                else{
-                    continue;
-                }
-            }
             if (c == '\n'){
+                struct person* grabbed = (struct person*) malloc(sizeof(struct person));
+                grabbed = grab(previous, currname);
                 if (grabbed == NULL){
+                    // printf("new infector\n");
                     struct person* p = (struct person*) malloc(sizeof(struct person));
-                    char copyname[30];
-                    char copylist[30];
-                    strcpy(copyname, currname);
-                    strcpy(copylist, previous->name);
-                    p->name = copyname;
-                    p->a[0] = copylist;
+                    strcpy(p->name, currname);
+                    strcpy(p->p1, previous->name);
+                    p->p1count++;;
+                    // printf(", %s infected %s", p->name, p->p1);
                     p->next = previous;
                     previous = p;
                 }
                 else{
-                    char copyvic[30];
-                    strcpy(copyvic, previous->name);
-                    if (grabbed->a[0] == NULL){
-                        grabbed->a[0] = copyvic;
+                    // printf("update\n");
+                    if (grabbed->p1count == 0){
+                        // printf("%s", grabbed->p1);
+                        // printf("test\n");
+                        strcpy(grabbed->p1, previous->name);
+                        grabbed->p1count++;
+                        // printf(", %s infected %s", grabbed->name, grabbed->p1);
                     }
                     else{
-                        grabbed->a[1] = copyvic;
+                        strcpy(grabbed->p2, previous->name);
+                        grabbed->p2count++;
+                        // printf(", %s infected %s and %s", grabbed->name, grabbed->p1, grabbed->p2);
                     }
                 }
             }
-            // printf("%s %s %s\n", p->name, p->a[0], p->a[1]);
         }
         printlist(final);
         return 0;
