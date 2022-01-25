@@ -10,15 +10,17 @@ struct person {
 
 struct person* grab(struct person* head, char target[]){
     // printf("Checking if exists...\n");
-    while (head != NULL){
-        printf("Scanning: %s\n", head->name);
-        if (strcmp(target, head->name) == 0){
+    struct person* temp = (struct person*) malloc(sizeof(person));
+    temp = head;
+    while (temp != NULL){
+        printf("Scanning: %s\n", temp->name);
+        if (strcmp(target, target->name) == 0){
             printf("found\n");
-            return head;
+            return temp;
         }
-        head = head->next;
+        temp = temp->next;
     }
-    // printf("not found\n");
+    printf("not found\n");
     return NULL;
 }
 
