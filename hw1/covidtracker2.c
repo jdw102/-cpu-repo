@@ -10,6 +10,8 @@ struct person {
 
 struct person* grab(struct person* head, char target[]){
     // printf("Checking if exists...\n");
+    struct person* n = (struct person*) malloc(sizeof(person));
+    n = NULL;
     struct person* temp = (struct person*) malloc(sizeof(person));
     temp = head;
     while (temp != NULL){
@@ -21,7 +23,7 @@ struct person* grab(struct person* head, char target[]){
         temp = temp->next;
     }
     printf("not found\n");
-    return NULL;
+    return n;
 }
 
 
