@@ -101,9 +101,17 @@ int main(int argc, char* argv[]){
                         // printf(", %s infected %s", grabbed->name, grabbed->p1);
                     }
                     else{
-                        strcpy(grabbed->p2, previous->name);
-                        grabbed->p2count++;
+                        if (strcmp(grabbed->p1, previous->name) > 0){
+                            strcpy(grabbed->p2, grabbed->p1);
+                            grabbed->p2count++;
+                            strcpy(grabbed->p1, previous->name);
+                            grabbed->p1count++;
+                        }
+                        else{
+                            strcpy(grabbed->p2, previous->name);
+                            grabbed->p2count++;
                         // printf(", %s infected %s and %s", grabbed->name, grabbed->p1, grabbed->p2);
+                        }
                     }
                 }
             }
