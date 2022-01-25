@@ -88,7 +88,6 @@ int main(int argc, char* argv[]){
             }
             if (c == '\n'){
                 if (grabbed == NULL){
-                    
                     struct person* p = (struct person*) malloc(sizeof(struct person));
                     char copyname[30];
                     char copylist[30];
@@ -119,5 +118,5 @@ int main(int argc, char* argv[]){
 
 
 void sortlist(struct person* head){
-
+        //Sort list
 }
