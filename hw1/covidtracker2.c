@@ -123,5 +123,29 @@ int main(int argc, char* argv[]){
 
 
 void sortlist(struct person* head){
-        //Sort list
-}
+        struct person* temp = head;
+        struct person* after = head->next;
+        struct person* previous = head;
+        int iter = 0;
+        while (after != NULL){
+            if (strcmp(temp->name, next->name) < 0){
+                temp->next = after->next;
+                after->next = temp;
+                if (iter > 0){
+                    previous-> next = after;
+                }
+                after = temp->next;
+                if (iter > 0){
+                    previous- = previous->next;
+                }
+            }
+            else{
+                after = after->next;
+                temp = temp->next;
+                if (iter > 0){
+                    previous = previous->next;
+                }
+            }
+            iter++;
+        }
+    }
