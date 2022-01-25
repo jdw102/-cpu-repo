@@ -36,7 +36,7 @@ void mutate(struct person* head, char target[], char victim[]){
             }
             else {
                 head->a[1] = victim;
-            }
+                 }
         }
         head = head->next;
     }
