@@ -11,17 +11,20 @@ struct person {
 struct person* grab(struct person* head, char target[]){
     // printf("Checking if exists...\n");
     struct person* temp = (struct person*) malloc(sizeof(person));
+    struct person* n = (struct person*) malloc(sizeof(person));
+    n= NULL;
     temp = head;
     while (temp != NULL){
         printf("Scanning: %s\n", temp->name);
-        if (strcmp(target, target->name) == 0){
+        if (strcmp(target, temp->name) == 0){
             printf("found\n");
             return temp;
         }
         temp = temp->next;
     }
     printf("not found\n");
-    return NULL;
+    printf("test\n");
+    return n;
 }
 
 
@@ -69,7 +72,7 @@ int main(int argc, char* argv[]){
             }
             struct person* grabbed = (struct person*) malloc(sizeof(struct person));
             grabbed = grab(previous, currname);
-            
+
             if (c == ' '){
                 if (grabbed == NULL){
                     struct person* p = (struct person*) malloc(sizeof(struct person));
@@ -84,7 +87,8 @@ int main(int argc, char* argv[]){
                 }
             }
             if (c == '\n'){
-                if (grabbed = NULL){
+                if (grabbed == NULL){
+                    printf("test\n");
                     struct person* p = (struct person*) malloc(sizeof(struct person));
                     char copyname[30];
                     char copylist[30];
