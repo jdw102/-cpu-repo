@@ -28,7 +28,51 @@ struct person* grab(struct person* head, char target[]){
     // printf("not found\n");
     return n;
 }
+void sortlist(struct person* head){
+        struct person* temp = head;
+        struct person* after = head->next;
+        struct person* previous = head;
+        int iter = 0;
+        while (after != NULL){
+            if (strcmp(temp->name, next->name) < 0){
+                temp->next = after->next;
+                after->next = temp;
+                if (iter > 0){
+                    previous-> next = after;
+                }
+                after = temp->next;
+                if (iter > 0){
+                    previous- = previous->next;
+                }
+                if (iter == 0){
+                    head = previous;
+                }
+            }
+            else{
+                after = after->next;
+                temp = temp->next;
+                if (iter > 0){
+                    previous = previous->next;
+                }
+            }
+            iter++;
+            if (checkalph){
+                return sortlist(head);
+            }
+            return void;
+        }
 
+    }
+bool checkalph(struct person* head){
+    struct person* temp = head;
+    while(temp != NULL){
+        if (strcmp(temp->name, temp->next->name) > 0){
+            return false;
+        }
+        temp = temp->next;
+    }
+    return true;
+}
 
 void printlist(struct person* head){
     while (head != NULL){
@@ -119,33 +163,3 @@ int main(int argc, char* argv[]){
         printlist(final);
         return 0;
 }
-
-
-
-void sortlist(struct person* head){
-        struct person* temp = head;
-        struct person* after = head->next;
-        struct person* previous = head;
-        int iter = 0;
-        while (after != NULL){
-            if (strcmp(temp->name, next->name) < 0){
-                temp->next = after->next;
-                after->next = temp;
-                if (iter > 0){
-                    previous-> next = after;
-                }
-                after = temp->next;
-                if (iter > 0){
-                    previous- = previous->next;
-                }
-            }
-            else{
-                after = after->next;
-                temp = temp->next;
-                if (iter > 0){
-                    previous = previous->next;
-                }
-            }
-            iter++;
-        }
-    }
