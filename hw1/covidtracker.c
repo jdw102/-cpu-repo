@@ -5,16 +5,20 @@
 struct person {
     char *name;
     char *a[2];
-    struct person* next; 
+    struct person* next;
 };
 
 bool search(struct person* head, char target[]){
+    // printf("Checking if exists...\n");
     while (head != NULL){
+        printf("Scanning: %s\n", head->name);
         if (strcmp(target, head->name) == 0){
+            printf("found\n");
             return true;
         }
         head = head->next;
     }
+    // printf("not found\n");
     return false;
 }
 
@@ -54,10 +58,17 @@ int main(int argc, char* argv[]){
             return 1;
         }
         int size = 0;
-        struct person* final = NULL;
-        struct person* previous = NULL;
+        struct person* final = (struct person*) malloc(sizeof(struct person));
+        struct person* previous = (struct person*) malloc(sizeof(struct person));
+        previous = NULL;
+        final = NULL;
         char c;
+        int iter = 0;
         while (true){
+            printf("Next person\n");
+            // if (iter == 1){
+            //     printf("Previous node: %s %s %s\n", previous->name, previous->a[1], previous->a[2]);
+            // }
             char currname[30] = "";
             int i = 0;
             for (c=getc(f1); c != EOF; c = getc(f1)){
@@ -67,35 +78,53 @@ int main(int argc, char* argv[]){
                 }
                 currname[i] = c;
                 i++;
-
             }
+            printf("Currname: %s\n", currname);
             if (strcmp(currname, "DONE") == 0){
                 final = previous;
                 break;
             }
-            struct person* p = (struct person*) malloc(sizeof(struct person*));
+            struct person* p = (struct person*) malloc(sizeof(struct person));
             if (c == ' '){
+                // printf("Got infected\n");
                 if (search(previous, currname) == true){
+                    printf("Node exists\n");
                     continue;
                 }
                 else{
-                    strcpy(p->name, currname);
+                    printf("Node does not exist\n");
+                    char copyname[30];
+                    strcpy(copyname, currname);
+                    p->name = copyname;
+                    p->next = previous;
+                    printf("Current node (p): %s %s %s\n", p->name, p->a[0], p->a[1]);
+                    previous = p;
                 }
             }
             if (c == '\n'){
+                // printf("Source\n");
                 if (search(previous, currname) == true){
+                    printf("Node exists\n");
                     mutate(previous, currname, previous->name);
                 }
                 else{
-                    p->name = currname;
-                    p->a[0] = previous->name;
+                    printf("Node does not exist\n");
+                    char copyname[30];
+                    char copylist[30];
+                    strcpy(copyname, currname);
+                    strcpy(copylist, previous->name);
+                    p->name = copyname;
+                    p->a[0] = copylist;
+                    p->next = previous;
+                    printf("Current node (p): %s %s %s\n", p->name, p->a[0], p->a[1]);
+                    previous = p;
                 }
             }
-            p->next = previous;
-            previous = p;
+            // printf("%s %s %s\n", p->name, p->a[0], p->a[1]);
+            iter++;
         }
-        printlist(final);
-        return 0;  
+        // printlist(final);
+        return 0;
 }
 
 
