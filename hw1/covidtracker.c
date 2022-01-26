@@ -2,6 +2,7 @@
 #include<stdlib.h>
 #include<string.h>
 
+
 struct person {
     char name[30];
     char p1[30];
