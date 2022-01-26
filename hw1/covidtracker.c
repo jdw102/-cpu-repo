@@ -7,8 +7,8 @@ struct person {
     char name[30];
     char p1[30];
     char p2[30];
-    int p1count = 0;
-    int p2count = 0;
+    int p1count;
+    int p2count;
     struct person* next;
 };
 
@@ -65,8 +65,13 @@ int main(int argc, char* argv[]){
             return 1;
         }
         struct person* previous = (struct person*) malloc(sizeof(struct person));
+        strcpy(previous->name, "");
+        strcpy(previous->p1, "");
+        previous->p1count = 0;
+        strcpy(previous->p2, "");
+        previous->p2count = 0;
+        previous->next = NULL;
         char oldname[30];
-        previous = NULL;
         char c;
         int iter = 0;
         while (true){
@@ -86,7 +91,12 @@ int main(int argc, char* argv[]){
 
             if (c == ' '){
                 struct person* p = (struct person*) malloc(sizeof(struct person));
+                strcpy(p->p1, "");
+                p->p1count = 0;
+                strcpy(p->p2, "");
+                p->p2count = 0;
                 strcpy(p->name, currname);
+                p->next = NULL;
                 if (previous == NULL || strcmp(p->name, previous->name) < 0){
                     p->next = previous;
                     previous = p;
@@ -101,8 +111,13 @@ int main(int argc, char* argv[]){
                 struct person* grabbed = grab(previous, currname);
                 if (grabbed == NULL){
                     struct person* p = (struct person*) malloc(sizeof(struct person));
+                    strcpy(p->p1, "");
+                    p->p1count = 0;
+                    strcpy(p->p2, "");
+                    p->p2count = 0;
                     strcpy(p->name, currname);
                     strcpy(p->p1, oldname);
+                    p->next = NULL;
                     p->p1count++;;
                     if (strcmp(p->name, previous->name) < 0){
                         p->next = previous;
