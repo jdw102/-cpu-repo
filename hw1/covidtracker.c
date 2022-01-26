@@ -12,20 +12,16 @@ struct person {
 };
 
 struct person* grab(struct person* head, char target[]){
-    // printf("Checking if exists...\n");
     struct person* temp = (struct person*) malloc(sizeof(person));
     struct person* n = (struct person*) malloc(sizeof(person));
     n= NULL;
     temp = head;
     while (temp != NULL){
-        // printf("Scanning: %s\n", temp->name);
         if (strcmp(target, temp->name) == 0){
-            // printf("found\n");
             return temp;
         }
         temp = temp->next;
     }
-    // printf("not found\n");
     return n;
 }
 
