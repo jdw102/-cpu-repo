@@ -13,9 +13,7 @@ struct person {
 };
 
 struct person* grab(struct person* head, char target[]){
-    struct person* temp = (struct person*) malloc(sizeof(person));
-    struct person* n = (struct person*) malloc(sizeof(person));
-    n= NULL;
+    struct person* temp = head;
     temp = head;
     while (temp != NULL){
         if (strcmp(target, temp->name) == 0){
@@ -23,7 +21,7 @@ struct person* grab(struct person* head, char target[]){
         }
         temp = temp->next;
     }
-    return n;
+    return NULL;
 }
 
 void placenode(struct person* head, struct person* newnode){
@@ -64,11 +62,9 @@ int main(int argc, char* argv[]){
             printf("ERROR: COULD NOT OPEN FILE");
             return 1;
         }
-        struct person* final = (struct person*) malloc(sizeof(struct person));
         struct person* previous = (struct person*) malloc(sizeof(struct person));
         char oldname[30];
         previous = NULL;
-        final = NULL;
         char c;
         int iter = 0;
         while (true){
@@ -83,7 +79,6 @@ int main(int argc, char* argv[]){
                 i++;
             }
             if (strcmp(currname, "DONE") == 0){
-                final = previous;
                 break;
             }
 
@@ -101,8 +96,7 @@ int main(int argc, char* argv[]){
                 }
             }
             if (c == '\n'){
-                struct person* grabbed = (struct person*) malloc(sizeof(struct person));
-                grabbed = grab(previous, currname);
+                struct person* grabbed = grab(previous, currname);
                 if (grabbed == NULL){
                     struct person* p = (struct person*) malloc(sizeof(struct person));
                     strcpy(p->name, currname);
@@ -141,6 +135,11 @@ int main(int argc, char* argv[]){
                 }
             }
         }
-        printlist(final);
+        printlist(previous);
+        while(previous != NULL){
+            struct person* temp = previous;
+            previous = previous->next;
+            free(temp);
+        }
         return 0;
 }
