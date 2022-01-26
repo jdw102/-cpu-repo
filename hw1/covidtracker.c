@@ -50,7 +50,9 @@ void placenode(struct person* head, struct person* newnode){
 void printlist(struct person* head){
     while (head != NULL){
         printf("%s %s %s\n", head->name, head->p1, head->p2);
+        struct person* temp = head;
         head = head->next;
+        free(temp);
     }
 }
 
@@ -136,10 +138,5 @@ int main(int argc, char* argv[]){
             }
         }
         printlist(previous);
-        while(previous != NULL){
-            struct person* temp = previous;
-            previous = previous->next;
-            free(temp);
-        }
         return 0;
 }
