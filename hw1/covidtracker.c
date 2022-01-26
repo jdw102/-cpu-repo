@@ -48,11 +48,15 @@ void placenode(struct person* head, struct person* newnode){
 
 
 void printlist(struct person* head){
+    int iter = 0;
     while (head != NULL){
-        printf("%s %s %s\n", head->name, head->p1, head->p2);
+        if (iter !=0){
+            printf("%s %s %s\n", head->name, head->p1, head->p2);
+        }
         struct person* temp = head;
         head = head->next;
         free(temp);
+        iter++;
     }
 }
 
