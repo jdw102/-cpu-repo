@@ -1,7 +1,7 @@
 {
   "test_dir": "tests",
   "mode": "logisim",
-  "force_suite_filename": "hw4.circ",
+  "force_suite_filename": "cpu.circ",
   "test_suite_names": ["boolean", "arithmetic", "shift", "memory", "control", "io"],
   "non_zero_exit_status_penalty": 1.0,
   "memory_penalty": 1.0,
