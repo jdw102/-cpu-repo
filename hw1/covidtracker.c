@@ -33,16 +33,14 @@ void placenode(struct person* head, struct person* newnode){
             last = false;
             before->next = newnode;
             newnode->next = temp;
-            break;
+            return;
         }
         if (before != temp){
             before = before->next;
         }
         temp = temp->next;
     }
-    if (last){
-        before->next = newnode;
-    }
+    before->next = newnode;
     return;
 }
 
