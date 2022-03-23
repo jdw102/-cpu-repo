@@ -11,9 +11,13 @@ main:
     syscall             #read input and assign to t0
     move $t0, $v0
 
+    addi $sp, $sp -4
+    sw $t6, 0($sp)
     move $a0, $t0
     jal recurse
     move $t1, $v0
+    lw $t6, 0($sp)
+    addi $sp, $sp 4
 
     li $v0, 1
     move $a0, $t1          #print mersenne value
@@ -25,25 +29,30 @@ main:
     jr $ra
 
 recurse:
-    addi $sp, $sp -4
+    addi $sp, $sp -20
     sw $ra, 0($sp)
+    sw $s2, 4($sp)
+    sw $s3, 8($sp)
+    sw $s4, 12($sp)
+    sw $s5, 16($sp)
+ 
     
-    move $s6, $a0
+    move $t6, $a0
 
     beqz $a0, base_case    #if n is 0 jump to basecase
 
     addi $sp, $sp -4
-    sw $s6, 0($sp)
+    sw $t6, 0($sp)
 
     addi $a0, $a0 -1     #increment by -1
     jal recurse
 
-    lw $s6, 0($sp)
+    lw $t6, 0($sp)
     addi $sp, $sp 4
 
     li $s3, 3       
     li $s4, -2          #create -2
-    mult $s3, $s6       #multiply n by 3 and assign to s0
+    mult $s3, $t6       #multiply n by 3 and assign to s0
     mflo $s0
     add $s0, $s0, $s4   #create constant to be added
 
@@ -55,16 +64,26 @@ recurse:
     add $v0, $s5, $s0
 
     lw $ra, 0($sp)
-    addi $sp, $sp 4
+    lw $s2, 4($sp)
+    lw $s3, 8($sp)
+    lw $s4, 12($sp)
+    lw $s5, 16($sp)
+    addi $sp, $sp 20
     jr $ra
 
 base_case:
     lw $ra, 0($sp)
-    addi $sp, $sp 4
+    lw $s2, 4($sp)
+    lw $s3, 8($sp)
+    lw $s4, 12($sp)
+    lw $s5, 16($sp)
+    addi $sp, $sp 20
     li $v0, -2
     jr $ra
 
 
 
 .data
-prompt: .asciiz "Please enter data: "
+prompt: .asciiz "Please enter data:"
+
+

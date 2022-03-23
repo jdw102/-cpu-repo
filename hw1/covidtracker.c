@@ -31,7 +31,7 @@ void placenode(struct person* head, struct person* newnode){
     while(temp != NULL){
         if (strcmp(temp->name, newnode->name) > 0){
             last = false;
-            before->next = newnode;
+            before->next = newnode; 
             newnode->next = temp;
             return;
         }

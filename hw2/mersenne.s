@@ -29,4 +29,4 @@ main:
     jr $ra
 
 .data
-prompt: .asciiz "Please enter data: "
+prompt: .asciiz "Please enter data:"
