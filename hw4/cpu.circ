@@ -1473,7 +1473,7 @@ This file is intended to be loaded by Logisim-evolution (https://github.com/reds
       <a name="radix" val="10unsigned"/>
       <a name="label" val="r5"/>
     </comp>
-    <comp loc="(1060,520)" name="registerfile">
+    <comp loc="(1060,520)" name="RegisterFile">
       <a name="labelloc" val="south"/>
     </comp>
     <comp lib="0" loc="(1020,580)" name="Probe">
@@ -3397,8 +3397,8 @@ This file is intended to be loaded by Logisim-evolution (https://github.com/reds
       <a name="label" val="enable"/>
     </comp>
   </circuit>
-  <circuit name="registerfile">
-    <a name="circuit" val="registerfile"/>
+  <circuit name="RegisterFile">
+    <a name="circuit" val="RegisterFile"/>
     <a name="clabel" val="q0"/>
     <a name="clabelup" val="east"/>
     <a name="clabelfont" val="SansSerif plain 12"/>
