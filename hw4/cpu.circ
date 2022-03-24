@@ -89,8 +89,8 @@ This file is intended to be loaded by Logisim-evolution (https://github.com/reds
       <a name="inputs" val="4"/>
     </tool>
   </toolbar>
-  <circuit name="adder">
-    <a name="circuit" val="adder"/>
+  <circuit name="sixteenbitadder">
+    <a name="circuit" val="sixteenbitadder"/>
     <a name="clabel" val="sub"/>
     <a name="clabelup" val="east"/>
     <a name="clabelfont" val="SansSerif plain 12"/>
