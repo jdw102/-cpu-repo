@@ -24,8 +24,7 @@ main:
 
     jr $ra
 foo:
-    add $v0, $a0, $a1
+    add $t2, $a0, $a1
     li $s0, 0
     li $s1, 0
-
     jr $ra

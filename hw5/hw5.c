@@ -43,6 +43,7 @@ int main(int argc, char* argv[]){
         char ins[5] = "";
         char addr[4] = "";
         int size;
+        char num[8] = "";
         char val[8] = "";
         int i = 0;
         char horm[4] = "";
@@ -55,6 +56,7 @@ int main(int argc, char* argv[]){
             ins[i] = c;
             i++;
         }
+        printf("%s\n", ins);
         for (char c=getc(f1); c != EOF; c = getc(f1)){
                 if (c == ' '){
                     i = 0;
@@ -63,24 +65,27 @@ int main(int argc, char* argv[]){
             addr[i] = c;
             i++;
         }
+        printf("%s\n", ins);
         for (char c=getc(f1); c != EOF; c = getc(f1)){
                 if (c == ' '){
                     i = 0;
                     break;
                 }
-            size = (int) c;
+            size = c - '0';
             i++;
         }
+        printf("%s\n", ins);
         for (char c=getc(f1); c != EOF; c = getc(f1)){
-                if (c == ' '){
+                if (c == ' ' || c == '\n'){
                     i = 0;
                     break;
                 }
             val[i] = c;
+            printf("%s %s\n", ins, val);
             i++;
         }
         printf("%s %s %d %s\n", ins, addr, size, val);
-        break
+        break;
         if (ins == "store"){
 
         }
