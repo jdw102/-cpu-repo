@@ -80,7 +80,7 @@ int main(int argc, char* argv[]){
             i++;
         }
         printf("%s %s %d %s\n", ins, addr, size, val);
-
+        break
         if (ins == "store"){
 
         }
