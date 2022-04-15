@@ -10,18 +10,22 @@ int blocknum;
 
 struct block{
         char vals[64];
-        char tag[16];      //block struct
+        int tag;      //block struct
         int lastins;
     };
 
-
+int grabblockoffset(int addr, int blocksize){
+    int blocknum = log(blocksize) / log(2);
+    unsigned mask = (1 << blocknum) - 1;
+    return addr & mask;
+}
 
 int main(int argc, char* argv[]){
     char* fname = argv[1];
     int size = atoi(argv[2]);
     int ways = atoi(argv[3]);           //extract args
     char* wbehavior = argv[4];
-    int bs = atoi(argv[5]); 
+    int bs = atoi(argv[5]);
 
     int num_frames = (size * 1024) / bs;
     int sets = num_frames / ways;       //dimensions calc
@@ -44,6 +48,7 @@ int main(int argc, char* argv[]){
         int inscounter = 0;
         char horm[4] = "";
         char word[16] = "";
+        int i = 0;
         for (char c=getc(f1); c != EOF; c = getc(f1)){
                 if (c == ' '){
                     i = 0;
@@ -57,7 +62,7 @@ int main(int argc, char* argv[]){
                     i = 0;
                     break;
                 }
-            addr[i] = c;
+            addrtemp[i] = c;
             i++;
         }
         for (char c=getc(f1); c != EOF; c = getc(f1)){
@@ -80,98 +85,100 @@ int main(int argc, char* argv[]){
         int addr = (int) strtol(addrtemp, NULL, 16);
         // char charbin[16] = hextobin(addr);
         int blockoffset = grabblockoffset(addr, bs);
-        printf("%d %d", addr, blockoffset);
+        printf("%d %d\n", addr, blockoffset);
+        break;
         // int index = grabindex(charbin, sets, bloksize);
         // int memindex = grabmemindex(charbin, bs);
         // char tag[16] = grabtag(charbin, sets, bs);
-        
 
-        if (ins == "store"){
-            bool hit = writecache(cache[index][], blockoffset, tag, val, size, ways);
-            if (strcmp(wbehavior, "wt") == 0){
-                int j = 0;
-                for (int k = 0; k < bytes; k+=2){
-                    mainmem[memindex]->vals[blockoffset + j][0] = val[k];
-                    mainmem[memindex]->vals[blockoffset + j][1] = val[k+1];
-                    j++;
-                }
-            }
-            if (hit){
-                strcpy(horm, "HIT");
-            }
-            else{
-                strcpy(horm, "MISS");
-                if (setisfull(cache[index][], ways)){
-                    int indmin = minindex(cache[index][], ways);
-                    if (strcmp(wbehavior, "wb")){
-                        int repindex = bindtodec(tag) * 16 + index;
-                        memcpy(mainmem + repindex, cache[index][indmin]->vals)  
-                    }
-                    int j = 0;
-                    cahe[index][indmin]->lastins = insnum;
-                    for (int k = 0; k < bytes; k+=2){
-                        cache[index][indmin]->vals[blockoffset + j][0] = val[k];
-                        cache[index][indmin]->vals[blockoffset + j][1] = val[k+1];
-                        j++;
-                    }
-                    cache[index][indmin]->tag = tag;
-                }
-            }
-        }
-        if (ins == "load"){
-            word = readcache(cache[index][], blockoffet, tag, size, ways);
-            if (strcmp(read, "") != 0){
-                strcpy(horm, "HIT");
-            }
-            else{
-                strcpy(horm, "MISS");               
-                struct block* newcache[index];
-                for (int i = 0; i < ways; i++){
-                    if (i == 0){
-                        newcache[k] = mainmem[memindex];
-                    }
-                    else{
-                        newcache[k] = cache[index][k];
-                    }
-                }
-                cache[index] = newcache[k];
-            }
-        }
+
+        // if (ins == "store"){
+        //     bool hit = writecache(cache[index][], blockoffset, tag, val, size, ways);
+        //     if (strcmp(wbehavior, "wt") == 0){
+        //         int j = 0;
+        //         for (int k = 0; k < bytes; k+=2){
+        //             mainmem[memindex]->vals[blockoffset + j][0] = val[k];
+        //             mainmem[memindex]->vals[blockoffset + j][1] = val[k+1];
+        //             j++;
+        //         }
+        //     }
+        //     if (hit){
+        //         strcpy(horm, "HIT");
+        //     }
+        //     else{
+        //         strcpy(horm, "MISS");
+        //         if (setisfull(cache[index][], ways)){
+        //             int indmin = minindex(cache[index][], ways);
+        //             if (strcmp(wbehavior, "wb")){
+        //                 int repindex = bindtodec(tag) * 16 + index;
+        //                 memcpy(mainmem + repindex, cache[index][indmin]->vals)
+        //             }
+        //             int j = 0;
+        //             cahe[index][indmin]->lastins = insnum;
+        //             for (int k = 0; k < bytes; k+=2){
+        //                 cache[index][indmin]->vals[blockoffset + j][0] = val[k];
+        //                 cache[index][indmin]->vals[blockoffset + j][1] = val[k+1];
+        //                 j++;
+        //             }
+        //             cache[index][indmin]->tag = tag;
+        //         }
+        //     }
+        // }
+        // if (ins == "load"){
+        //     word = readcache(cache[index][], blockoffet, tag, size, ways);
+        //     if (strcmp(read, "") != 0){
+        //         strcpy(horm, "HIT");
+        //     }
+        //     else{
+        //         strcpy(horm, "MISS");
+        //         struct block* newcache[index];
+        //         for (int i = 0; i < ways; i++){
+        //             if (i == 0){
+        //                 newcache[k] = mainmem[memindex];
+        //             }
+        //             else{
+        //                 newcache[k] = cache[index][k];
+        //             }
+        //         }
+        //         cache[index] = newcache[k];
+        //     }
+        // }
+    
     }
     return 0;
 }
 
-bool writecache(struct block* cache[], int blockos, char* tag, char* val, int bytes, int ways, int insnum){
-    for (int i = 0; i < ways; i++){
-        if (strcmp(cache[i]->tag, tag) == 0){
-            int j = 0;
-            cahe[i]->lastins = insnum;
-            for (int k = 0; k < bytes; k+=2){
-                cache[i]->vals[blockos + j][0] = val[k];
-                cache[i]->vals[blockos + j][1] = val[k+1];
-                j++;
-            }
-            return true;
-        }
-    }
-    
-    return false;
-}
-char* readcache(struct block* cache[], int blockos, char* tag, int bytes, int ways, int insnum){
-    for (int i = 0; i < ways; i++){
-        if (strcmp(cache[i]->tag, tag) == 0){
-            cache[i]->lastins = insnum;
-            char word[16] = "";
-            int j = 0;
-            for (int k = 0; k < bytes * 2; k+=2){
-                word[k] = cache[i]->vals[blockos + j][0];
-                word[k+1] = cache[i]->vals[blockos + j][1];
-            }
-            return word;
-        }
-    }
-    return "";
-}
+// bool writecache(struct block* cache[], int blockos, char* tag, char* val, int bytes, int ways, int insnum){
+//     for (int i = 0; i < ways; i++){
+//         if (strcmp(cache[i]->tag, tag) == 0){
+//             int j = 0;
+//             cahe[i]->lastins = insnum;
+//             for (int k = 0; k < bytes; k+=2){
+//                 cache[i]->vals[blockos + j][0] = val[k];
+//                 cache[i]->vals[blockos + j][1] = val[k+1];
+//                 j++;
+//             }
+//             return true;
+//         }
+//     }
+
+//     return false;
+// }
+// char* readcache(struct block* cache[], int blockos, char* tag, int bytes, int ways, int insnum){
+//     for (int i = 0; i < ways; i++){
+//         if (strcmp(cache[i]->tag, tag) == 0){
+//             cache[i]->lastins = insnum;
+//             char word[16] = "";
+//             int j = 0;
+//             for (int k = 0; k < bytes * 2; k+=2){
+//                 word[k] = cache[i]->vals[blockos + j][0];
+//                 word[k+1] = cache[i]->vals[blockos + j][1];
+//             }
+//             return word;
+//         }
+//     }
+//     return "";
+// }
 
 // char* hextobin(char* hex){
 //     char bin[30] = "";
@@ -243,12 +250,6 @@ char* readcache(struct block* cache[], int blockos, char* tag, int bytes, int wa
 // }
 
 
-int grabblockoffset(int addr, int blocksize){
-    int blocknum = log(blocksize) / log(2);
-    unsigned mask = (1 << blocknum) - 1;
-    return addr & mask;
-}
-
 // int grabindex(char* bin, int sets, int blocksize){
 //     int indexnum = log(sets) / log(2);
 //     int blocknum = log(blocksize) / log(2);
@@ -278,21 +279,21 @@ int grabblockoffset(int addr, int blocksize){
 //     return string;
 // }
 
-bool setisfull(struct block* cache[], int ways){
-    for (int k = 0; k < ways; k++){
-        if (cache[k] == NULL){
-            return false;
-        }
-    }
-    return true;
-}
+// bool setisfull(struct block* cache[], int ways){
+//     for (int k = 0; k < ways; k++){
+//         if (cache[k] == NULL){
+//             return false;
+//         }
+//     }
+//     return true;
+// }
 
-int minindex(struct block* set[], int ways){
-    int min = set[0]->lastins;
-    for (int k = 1; k < ways; k++){
-        if (set[k]->lastins < min){
-            min = set[k]->lastins;
-        }
-    }
-    return min;
-}
+// int minindex(struct block* set[], int ways){
+//     int min = set[0]->lastins;
+//     for (int k = 1; k < ways; k++){
+//         if (set[k]->lastins < min){
+//             min = set[k]->lastins;
+//         }
+//     }
+//     return min;
+// }
