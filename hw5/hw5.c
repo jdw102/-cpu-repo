@@ -19,6 +19,19 @@ int grabblockoffset(int addr, int blocksize){
     unsigned mask = (1 << blocknum) - 1;
     return addr & mask;
 }
+int grabindex(int addr, int sets, int blocksize){
+    int indexnum = log(sets) / log(2);
+    int blocknum = log(blocksize) / log(2);
+    unsigned mask = ((1 << indexnum) - 1) << blocknum;
+    return addr & mask;
+}
+
+char* grabtag(int addr, int sets, int blocksize){
+    int indexnum = log(sets) / log(2);
+    int blocknum = log(bs) / log(2);
+    unsigned mask = (1 << (blocknum + indexnum)) - 1;
+    return addr & mask;
+}
 
 int main(int argc, char* argv[]){
     char* fname = argv[1];
@@ -83,13 +96,11 @@ int main(int argc, char* argv[]){
         }
         // printf("%s %s %d %s\n", ins, addr, size, val);
         int addr = (int) strtol(addrtemp, NULL, 16);
-        // char charbin[16] = hextobin(addr);
         int blockoffset = grabblockoffset(addr, bs);
-        printf("%d %d\n", addr, blockoffset);
+        int index = grabindex(charbin, sets, bloksize);
+        int tag = grabtag(charbin, sets, bs);
+        printf("%d %d %d %d\n", addr, blockoffset, index, tag);
         break;
-        // int index = grabindex(charbin, sets, bloksize);
-        // int memindex = grabmemindex(charbin, bs);
-        // char tag[16] = grabtag(charbin, sets, bs);
 
 
         // if (ins == "store"){
@@ -180,104 +191,8 @@ int main(int argc, char* argv[]){
 //     return "";
 // }
 
-// char* hextobin(char* hex){
-//     char bin[30] = "";
-//     int i = 0;
-//     while(hex[i]){
-//         switch (hex[i]){
-//             case '0':
-//                 bin[i] = 0; bin[i+1] = 0; bin[i+2] = 0; bin[i+3] = 0;
-//                 break;
-//             case '1':
-//                 bin[i] = 0; bin[i+1] = 0; bin[i+2] = 0; bin[i+3] = 1;
-//                 break;
-//             case '2':
-//                 bin[i] = 0; bin[i+1] = 0; bin[i+2] = 1; bin[i+3] = 0;
-//                 break;
-//             case '3':
-//                 bin[i] = 0; bin[i+1] = 0; bin[i+2] = 1; bin[i+3] = 1;
-//                 break;
-//             case '4':
-//                 bin[i] = 0; bin[i+1] = 1; bin[i+2] = 0; bin[i+3] = 0;
-//                 break;
-//             case '5':
-//                 bin[i] = 0; bin[i+1] = 1; bin[i+2] = 0; bin[i+3] = 1;
-//                 break;
-//             case '6':
-//                 bin[i] = 0; bin[i+1] = 1; bin[i+2] = 1; bin[i+3] = 0;
-//                 break;
-//             case '7':
-//                 bin[i] = 0; bin[i+1] = 1; bin[i+2] = 1; bin[i+3] = 1;
-//                 break;
-//             case '8':
-//                 bin[i] = 1; bin[i+1] = 0; bin[i+2] = 0; bin[i+3] = 0;
-//                 break;
-//             case '9':
-//                 bin[i] = 1; bin[i+1] = 0; bin[i+2] = 0; bin[i+3] = 1;
-//                 break;
-//             case 'a':
-//                 bin[i] = 1; bin[i+1] = 0; bin[i+2] = 1; bin[i+3] = 0;
-//                 break;
-//             case 'b':
-//                 bin[i] = 1; bin[i+1] = 0; bin[i+2] = 1; bin[i+3] = 1;
-//                 break;
-//             case 'c':
-//                 bin[i] = 1; bin[i+1] = 1; bin[i+2] = 0; bin[i+3] = 0;
-//                 break;
-//             case 'd':
-//                 bin[i] = 1; bin[i+1] = 1; bin[i+2] = 0; bin[i+3] = 1;
-//                 break;
-//             case 'e':
-//                 bin[i] = 1; bin[i+1] = 1; bin[i+2] = 1; bin[i+3] = 0;
-//                 break;
-//             case 'f':
-//                 bin[i] = 1; bin[i+1] = 1; bin[i+2] = 1; bin[i+3] = 1;
-//                 break;
-//             default:
-//                 printf("\nInvalid hexadecimal digit %c", hex[i]);
-//         }
-//         i+=4;
-//     }
-//     return bin;
-// }
-// int bintodec(char* bin){
-//     int x = 0;
-//     for (int i = 0; i < 16; i++){
-//         int a =  bin[i] - '0';
-//         x += a * (int) pow(2.0, (double) i);
-//     }
-//     return x;
-// }
 
 
-// int grabindex(char* bin, int sets, int blocksize){
-//     int indexnum = log(sets) / log(2);
-//     int blocknum = log(blocksize) / log(2);
-//     char string[indexnum];
-//     for (int = blocknum; k < indexnum + blocknum; k++){
-//         string[k] = bin[k];
-//     }
-//     return bintodec(string);
-// }
-
-// int grabmemindex(char* bin, int blocksize){
-//     int blocknum = log(bs) / log(2);
-//     char string[16 - blocknum];
-//     for (int k = blocknum; k < 16; k++){
-//         string[k] = bin[k];
-//     }
-//     return bintodec(string);
-// }
-
-// char* grabtag(char* bin, int sets, int blocksize){
-//     int indexnum = log(sets) / log(2);
-//     int blocknum = log(bs) / log(2);
-//     char string[16 - start];
-//     for (int k = indexnum + blocknum; k < 16; k++){
-//         string[k] = bin[k];
-//     }
-//     return string;
-// }
 
 // bool setisfull(struct block* cache[], int ways){
 //     for (int k = 0; k < ways; k++){
