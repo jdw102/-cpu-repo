@@ -23,14 +23,17 @@ int grabindex(int addr, int sets, int blocksize){
     int indexnum = log(sets) / log(2);
     int blocknum = log(blocksize) / log(2);
     unsigned mask = ((1 << indexnum) - 1) << blocknum;
-    return addr & mask;
+    return (addr & mask) >> blocknum;
 }
 
-char* grabtag(int addr, int sets, int blocksize){
+int grabtag(int addr, int sets, int blocksize){
     int indexnum = log(sets) / log(2);
-    int blocknum = log(bs) / log(2);
-    unsigned mask = (1 << (blocknum + indexnum)) - 1;
-    return addr & mask;
+    int blocknum = log(blocksize) / log(2);
+    unsigned i = (1 << (16 - indexnum - blocknum));
+    printf("%d\n", i);
+    unsigned mask = ((1 << (16 - indexnum - blocknum)) - 1) << (blocknum + indexnum);
+    printf("%d\n", mask);
+    return (addr & mask) >> (blocknum + indexnum);
 }
 
 int main(int argc, char* argv[]){
@@ -97,8 +100,8 @@ int main(int argc, char* argv[]){
         // printf("%s %s %d %s\n", ins, addr, size, val);
         int addr = (int) strtol(addrtemp, NULL, 16);
         int blockoffset = grabblockoffset(addr, bs);
-        int index = grabindex(charbin, sets, bloksize);
-        int tag = grabtag(charbin, sets, bs);
+        int index = grabindex(addr, sets, bs);
+        int tag = grabtag(addr, sets, bs);
         printf("%d %d %d %d\n", addr, blockoffset, index, tag);
         break;
 
