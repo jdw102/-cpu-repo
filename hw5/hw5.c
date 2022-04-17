@@ -35,7 +35,7 @@ bool writecache(struct block* cache, int blockoffset, int tag, char* val, int by
     for (int i = 0; i < ways; i++){
         if (cache[i].tag == tag){
             int valind = 0;
-            cache[i]->lastins = insnum;
+            cache[i].lastins = insnum;
             for (int k = 0; k < bytes; k++){
                 char byte[2];
                 byte[0] = val[valind];
@@ -72,14 +72,14 @@ bool setisfull(struct block* cache, int ways){
 }
 
 int targetindex(struct block* set[], int ways){
-    int minval = set[0]->lastins;
+    int minval = set[0].lastins;
     int minindex = 0;
     for (int k = 0; k < ways; k++){
         if (set[k] == NULL){
             return k;
         }
-        if (set[k]->lastins < minval){
-            minval = set[k]->lastins;
+        if (set[k].lastins < minval){
+            minval = set[k].lastins;
             minindex = k;
         }
     }
@@ -130,8 +130,10 @@ int main(int argc, char* argv[]){
 
 
     struct block** cache;            //creating cache and main memory with proper dimensions
-    int mainmem[65536];
-    
+    int mainmem[65536 * 4];
+    mainmem[0] = 1;
+    mainmem[1] = 2;
+    printf("%d %d", mainmem[0], mainmem[1]);
     cache = (struct block**) calloc(sets, sizeof(struct block*));
     for (int k = 0; k < sets; k++){
         cache[k] = (struct block*) calloc(ways, sizeof(struct block));
