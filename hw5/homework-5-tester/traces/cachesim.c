@@ -107,18 +107,18 @@ int* readmem(int set[], int addr, int bytes, int* words){
 
 void evictandreplace(struct block* cache, int mem[], int tagnum, int insnum, int memblockindex, int blocknum, int indexnum, int index, int ways, char* wbehavior, bool setisfull, int bs){
     int tindex = targetindex(cache, ways);
-    for (int k = 0; k < bs; k++){
-        cache[tindex].vals[k] = (int) mem[memblockindex + k];
-    }
-    cache[tindex].tag = tagnum;
-    cache[tindex].lastins = insnum;
-    cache[tindex].valid = 1;
     if (setisfull && (strcmp(wbehavior, "wb") == 0)){
         int wbindex = (cache[tindex].tag << (blocknum + indexnum)) + (index << (blocknum + indexnum));
         for (int k = 0; k < bs; k++){
             mem[wbindex + k] = cache[tindex].vals[k];
         }
     }
+    for (int k = 0; k < bs; k++){
+        cache[tindex].vals[k] =  mem[memblockindex + k];
+    }
+    cache[tindex].tag = tagnum;
+    cache[tindex].lastins = insnum;
+    cache[tindex].valid = 1;
 }
 
 
@@ -180,8 +180,13 @@ int main(int argc, char* argv[]){
             }
             else{
                 strcpy(horm, "miss");
-                writemem(mainmem, addr, val, bytes);
-                evictandreplace(cache[index], mainmem, tag, inscount, memblockindex, blocknum, indexnum, index, ways, wbehavior, check, bs);
+                if (strcmp("wb", wbehavior) == 0){
+                    evictandreplace(cache[index], mainmem, tag, inscount, memblockindex, blocknum, indexnum, index, ways, wbehavior, check, bs);
+                    hit = writecache(cache[index], blockoffset, tag, val, bytes, ways, inscount);
+                }
+                else{
+                    writemem(mainmem, addr, val, bytes);
+                }
             }
         }
         // printf("%x%x", cache[index][0].vals[27], cache[index][0].vals[28]);
