@@ -10,7 +10,7 @@ int blocknum;
 
 struct block{
         int vals[64];
-        int tag;      //block struct
+        int tag;      //block struc
         int lastins;
         int valid;
     };
