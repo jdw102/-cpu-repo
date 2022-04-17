@@ -9,7 +9,7 @@ int indexnum;
 int blocknum;
 
 struct block{
-        char vals[64];
+        char vals[4 * 64];
         int tag;      //block struct
         int lastins;
     };
@@ -28,14 +28,14 @@ int grabtag(int addr, int indexnum, int blocknum){;
     return (addr & mask) >> (blocknum + indexnum);
 }
 int grabmemblockindex(int addr, int indexnum, int blocknum){
-    unsigned mask - ((1 << (16 - blocknum)) - 1) << (blocknum + indexnum);
+    unsigned mask = ((1 << (16 - blocknum)) - 1) << (blocknum + indexnum);
     return (addr & mask);
 }
-bool writecache(struct block* cache[], int blockoffset, int tag, char* val, int bytes, int ways, int insnum){
+bool writecache(struct block* cache, int blockoffset, int tag, char* val, int bytes, int ways, int insnum){
     for (int i = 0; i < ways; i++){
-        if (cache[i]-> tag == tag){
+        if (cache[i].tag == tag){
             int valind = 0;
-            cahe[i]->lastins = insnum;
+            cache[i]->lastins = insnum;
             for (int k = 0; k < bytes; k++){
                 char byte[2];
                 byte[0] = val[valind];
@@ -49,13 +49,12 @@ bool writecache(struct block* cache[], int blockoffset, int tag, char* val, int 
     }
     return false;
 }
-int* readcache(struct block* cache[], int blockoffset, char* tag, int bytes, int ways, int insnum){
+int* readcache(struct block* cache, int blockoffset, int tag, int bytes, int ways, int insnum, int* words){
     for (int i = 0; i < ways; i++){
-        if (cache[i]->tag == tag){
-            cache[i]->lastins = insnum;
-            int words[bytes];
+        if (cache[i].tag == tag){
+            cache[i].lastins = insnum;
             for (int k = 0; k < bytes; k++){
-                word[k] = cache[i]->vals[blockoffset + k];
+                *(words + k) = cache[i].vals[blockoffset + k];
             }
             return words;
         }
@@ -63,9 +62,9 @@ int* readcache(struct block* cache[], int blockoffset, char* tag, int bytes, int
     return NULL;
 }
 
-bool setisfull(struct block* cache[], int ways){
+bool setisfull(struct block* cache, int ways){
     for (int k = 0; k < ways; k++){
-        if (cache[k] == NULL){
+        if (cache[k].tag == 0){
             return false;
         }
     }
@@ -98,23 +97,22 @@ void writemem(int set[], int addr, char* val, int bytes){
     }
 }
 
-int* readmem(int set[], int addr, int bytes){
-    int words[bytes];
+int* readmem(int set[], int addr, int bytes, int* words){
     for (int k = 0; k < bytes; k++){
-        words[k] = set[addr + k];
+        *(words  + k) = set[addr + k];
     }
     return words;
 }
 
-void evictandreplace(struct block* cache[], int mem[], int tagnum, int insnum, int memblockindex, int blocknum, int indexnum, int index, int ways, char* wbehavior, bool setisfull){
+void evictandreplace(struct block* cache[], int mem[], int tagnum, int insnum, int memblockindex, int blocknum, int indexnum, int index, int ways, char* wbehavior, bool setisfull, int bs){
     struct block* newblock = (struct block*) malloc(sizeof(struct block));
-    memcpy(newblock->vals, mem[memblockindex]);
+    memcpy(newblock->vals, mem + memblockindex, bs);
     newblock->tag = tagnum;
     newblock->lastins = insnum;
-    int tindex = targetindex(cache[], ways);
+    int tindex = targetindex(cache, ways);
     if (setisfull && (strcmp(wbehavior, "wb") == 0)){
         int wbindex = (cache[tindex]->tag << (blocknum + indexnum)) + (index << (blocknum + indexnum));
-        memcpy(mem[wbindex], cache[tindex]->vals, bs);
+        memcpy(mem + wbindex, cache[tindex]->vals, bs);
     }
     cache[tindex] = newblock; 
 }
@@ -130,8 +128,14 @@ int main(int argc, char* argv[]){
     int num_frames = (size * 1024) / bs;
     int sets = num_frames / ways;       //dimensions calc
 
-    struct block* cache[sets][ways];            //creating cache and main memory with proper dimensions
-    char mainmem[65536];
+
+    struct block** cache;            //creating cache and main memory with proper dimensions
+    int mainmem[65536];
+    
+    cache = (struct block**) calloc(sets, sizeof(struct block*));
+    for (int k = 0; k < sets; k++){
+        cache[k] = (struct block*) calloc(ways, sizeof(struct block));
+    }
 
     int indexnum = log(sets) / log(2);
     int blocknum = log(bs) / log(2);
@@ -141,92 +145,59 @@ int main(int argc, char* argv[]){
         printf("ERROR: COULD NOT OPEN FILE");   //open file
         return 1;
     }
+    int r;
     int inscount = 0;
-    while (true){
-        if (getc(f1) ==  EOF){
-            break;
+    char ins[8]; 
+    int addr; 
+    int bytes;
+    char val[10];
+    while (r = fscanf(f1, "%s %x %d", ins, &addr, &bytes) != EOF){
+        int words[8];
+        char horm[5] = "";
+        if (strcmp(ins, "store") == 0){
+            fscanf(f1, "%s", val);
         }
-        char ins[5] = "";
-        char addrtemp[4] = "";
-        int size;
-        char num[8] = "";
-        char val[8] = "";
-        int inscounter = 0;
-        char horm[4] = "";
-        int words[32];
-        int i = 0;
-        for (char c=getc(f1); c != EOF; c = getc(f1)){
-                if (c == ' '){
-                    i = 0;
-                    break;
-                }
-            ins[i] = c;
-            i++;
-        }
-        for (char c=getc(f1); c != EOF; c = getc(f1)){
-                if (c == ' '){
-                    i = 0;
-                    break;
-                }
-            addrtemp[i] = c;
-            i++;
-        }
-        for (char c=getc(f1); c != EOF; c = getc(f1)){
-                if (c == ' '){
-                    i = 0;
-                    break;
-                }
-            size = c - '0';
-            i++;
-        }
-        for (char c=getc(f1); c != EOF; c = getc(f1)){
-                if (c == ' ' || c == '\n'){
-                    i = 0;
-                    break;
-                }
-            val[i] = c;
-            i++;
-        }
-        // printf("%s %s %d %s\n", ins, addr, size, val);
-        int addr = (int) strtol(addrtemp, NULL, 16);
+
         int blockoffset = grabblockoffset(addr, blocknum);
         int index = grabindex(addr, indexnum, blocknum);
         int tag = grabtag(addr, indexnum, blocknum);
         int memblockindex = grabmemblockindex(addr, indexnum, blocknum);
-        // printf("%d %d %d %d\n", addr, blockoffset, index, tag);
+
         bool check = setisfull(cache[index], ways);
-        if (ins == "store"){
-            bool hit = writecache(cache[index], blockoffset, tag, val, size, ways, inscount);
-            if (strcmp(wbehavior, "wt") == 0){
-                writemem(mainmem, addr, val, size);
-            }
+        if (strcmp("store", ins) == 0){
+            bool hit = writecache(cache[index], blockoffset, tag, val, bytes, ways, inscount);
+            // if (strcmp(wbehavior, "wt") == 0){
+            //     writemem(mainmem, addr, val, bytes);
+            // }
             if (hit){
                 strcpy(horm, "hit");
             }
-            else{
-                strcpy(horm, "miss");
-                writemem(mainmem, addr, val, size);
-                evictandreplace(cache[index], mainmem, tag, inscount, memblockindex, blocknum, indexnum, index, ways, wbehavior, check);
-            }
+            // else{
+            //     strcpy(horm, "miss");
+            //     writemem(mainmem, addr, val, bytes);
+            //     evictandreplace(cache[index], mainmem, tag, inscount, memblockindex, blocknum, indexnum, index, ways, wbehavior, check, bs);
+            // }
         }
-        if (ins == "load"){
-            words = readcache(cache[index][], blockoffset, tag, size, ways, inscount);
-            if (words !=  NULL){
-                strcpy(horm, "hit");
-            }
-            else{
-                strcpy(horm, "miss");
-                words = readmem(mainmem, addr, size);
-                evictandreplace(cache[index], mainmem, tag, inscount, memblockindex, blocknum, indexnum, index, ways, wbehavior, check);
-            }
-        }
-        printf("%s %s %s ", ins, addrtemp, horm);
+        // if (strcmp("load", ins) == 0){
+        //     readcache(cache[index], blockoffset, tag, size, ways, inscount, words);
+        //     if (words !=  NULL){
+        //         strcpy(horm, "hit");
+        //     }
+        //     else{
+        //         strcpy(horm, "miss");
+        //         readmem(mainmem, addr, size, words);
+        //         evictandreplace(cache[index], mainmem, tag, inscount, memblockindex, blocknum, indexnum, index, ways, wbehavior, check, bs);
+        //     }
+        // }
+        printf("%s %x %s ", ins, addr, horm);
         for (int k = 0; k < size; k ++){
-            printf("%x", words[k]);
+            printf("%x", *(words + k));
         }
         printf("\n");
         inscount++;
     }
     return 0;
 }
+
+
 
