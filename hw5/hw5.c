@@ -9,7 +9,7 @@ int indexnum;
 int blocknum;
 
 struct block{
-        char vals[4 * 64];
+        int vals[64];
         int tag;      //block struct
         int lastins;
         int valid;
@@ -29,7 +29,7 @@ int grabtag(int addr, int indexnum, int blocknum){;
     return (addr & mask) >> (blocknum + indexnum);
 }
 int grabmemblockindex(int addr, int indexnum, int blocknum){
-    unsigned mask = ((1 << (16 - blocknum)) - 1) << (blocknum + indexnum);
+    unsigned mask = ((1 << (16 - blocknum)) - 1) << (blocknum);
     return (addr & mask);
 }
 bool writecache(struct block* cache, int blockoffset, int tag, char* val, int bytes, int ways, int insnum){
@@ -107,13 +107,16 @@ int* readmem(int set[], int addr, int bytes, int* words){
 
 void evictandreplace(struct block* cache, int mem[], int tagnum, int insnum, int memblockindex, int blocknum, int indexnum, int index, int ways, char* wbehavior, bool setisfull, int bs){
     int tindex = targetindex(cache, ways);
-    memcpy(cache[tindex].vals, mem + memblockindex, bs);
-    printf("%x\n", *(mem + memblockindex + 27));
+    for (int k = 0; k < bs; k++){
+        cache[tindex].vals[k] = (int) mem[memblockindex + k];
+    }
     cache[tindex].tag = tagnum;
     cache[tindex].lastins = insnum;
     if (setisfull && (strcmp(wbehavior, "wb") == 0)){
         int wbindex = (cache[tindex].tag << (blocknum + indexnum)) + (index << (blocknum + indexnum));
-        memcpy(mem + wbindex, cache[tindex].vals, bs);
+        for (int k = 0; k < bs; k++){
+            mem[wbindex + k] = cache[tindex].vals[k];
+        }
     }
 }
 
@@ -164,7 +167,6 @@ int main(int argc, char* argv[]){
         int index = grabindex(addr, indexnum, blocknum);
         int tag = grabtag(addr, indexnum, blocknum);
         int memblockindex = grabmemblockindex(addr, indexnum, blocknum);
-        printf("%d\n", memblockindex);
         bool check = setisfull(cache[index], ways);
         if (strcmp("store", ins) == 0){
             bool hit = writecache(cache[index], blockoffset, tag, val, bytes, ways, inscount);
@@ -178,7 +180,6 @@ int main(int argc, char* argv[]){
             else{
                 strcpy(horm, "miss");
                 writemem(mainmem, addr, val, bytes);
-                printf("%x\n", mainmem[addr + 1]);
                 evictandreplace(cache[index], mainmem, tag, inscount, memblockindex, blocknum, indexnum, index, ways, wbehavior, check, bs);
             }
         }
@@ -196,8 +197,8 @@ int main(int argc, char* argv[]){
         }
         printf("%s %x %s ", ins, addr, horm);
         if (strcmp("load", ins) == 0){
-            for (int k = 0; k < 4 * bytes; k+=4){
-                printf("%x", *(words + k));
+            for (int k = 0; k < bytes; k++){
+                printf("%x", words[k]);
             }
         }
         printf("\n");
