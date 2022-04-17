@@ -197,8 +197,9 @@ int main(int argc, char* argv[]){
             }
             else{
                 strcpy(horm, "miss");
-                readmem(mainmem, addr, size, words);
+                // readmem(mainmem, addr, size, words);
                 evictandreplace(cache[index], mainmem, tag, inscount, memblockindex, blocknum, indexnum, index, ways, wbehavior, check, bs);
+                read = readcache(cache[index], blockoffset, tag, size, ways, inscount, words);
             }
         }
         printf("%s %04x %s ", ins, addr, horm);
