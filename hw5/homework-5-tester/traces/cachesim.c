@@ -170,6 +170,9 @@ int main(int argc, char* argv[]){
         int tag = grabtag(addr, indexnum, blocknum);
         int memblockindex = grabmemblockindex(addr, indexnum, blocknum);
         bool check = setisfull(cache[index], ways);
+        int wbindex = (tag << (blocknum + indexnum)) + (index << (blocknum));
+        printf("%d\n", wbindex);
+
         if (strcmp("store", ins) == 0){
             bool hit = writecache(cache[index], blockoffset, tag, val, bytes, ways, inscount);
             if (strcmp(wbehavior, "wt") == 0){
