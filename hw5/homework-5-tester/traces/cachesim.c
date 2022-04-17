@@ -108,7 +108,8 @@ int* readmem(int set[], int addr, int bytes, int* words){
 void evictandreplace(struct block* cache, int mem[], int tagnum, int insnum, int memblockindex, int blocknum, int indexnum, int index, int ways, char* wbehavior, bool setisfull, int bs){
     int tindex = targetindex(cache, ways);
     if (setisfull && (strcmp(wbehavior, "wb") == 0)){
-        int wbindex = (cache[tindex].tag << (blocknum + indexnum)) + (index << (blocknum + indexnum));
+        printf("test\n");
+        int wbindex = (cache[tindex].tag << (blocknum + indexnum)) + (index << (indexnum));
         for (int k = 0; k < bs; k++){
             mem[wbindex + k] = cache[tindex].vals[k];
         }
