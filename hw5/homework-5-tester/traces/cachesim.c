@@ -34,7 +34,7 @@ int grabmemblockindex(int addr, int indexnum, int blocknum){
 }
 bool writecache(struct block* cache, int blockoffset, int tag, char* val, int bytes, int ways, int insnum){
     for (int i = 0; i < ways; i++){
-        if (cache[i].tag == tag){
+        if (cache[i].tag == tag && cache[i].valid == 1){
             int valind = 0;
             cache[i].lastins = insnum;
             for (int k = 0; k < bytes; k++){
