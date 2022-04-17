@@ -164,7 +164,7 @@ int main(int argc, char* argv[]){
         int index = grabindex(addr, indexnum, blocknum);
         int tag = grabtag(addr, indexnum, blocknum);
         int memblockindex = grabmemblockindex(addr, indexnum, blocknum);
-
+        printf("%d\n", memblockindex);
         bool check = setisfull(cache[index], ways);
         if (strcmp("store", ins) == 0){
             bool hit = writecache(cache[index], blockoffset, tag, val, bytes, ways, inscount);
@@ -182,7 +182,7 @@ int main(int argc, char* argv[]){
                 evictandreplace(cache[index], mainmem, tag, inscount, memblockindex, blocknum, indexnum, index, ways, wbehavior, check, bs);
             }
         }
-        printf("%x%x", cache[index][0].vals[27], cache[index][0].vals[28]);
+        // printf("%x%x", cache[index][0].vals[27], cache[index][0].vals[28]);
         if (strcmp("load", ins) == 0){
             readcache(cache[index], blockoffset, tag, size, ways, inscount, words);
             if (words !=  NULL){
