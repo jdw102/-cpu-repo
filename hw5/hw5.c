@@ -12,6 +12,7 @@ struct block{
         char vals[4 * 64];
         int tag;      //block struct
         int lastins;
+        int valid;
     };
 
 int grabblockoffset(int addr, int blocknum){
@@ -41,7 +42,7 @@ bool writecache(struct block* cache, int blockoffset, int tag, char* val, int by
                 byte[0] = val[valind];
                 byte[1] = val[valind+1];
                 int store = (int) strtol(byte, NULL, 16);
-                cache[i]->vals[blockoffset + k] = store;
+                cache[i].vals[blockoffset + k] = store;
                 valind+=2;
             }
             return true;
@@ -54,7 +55,7 @@ int* readcache(struct block* cache, int blockoffset, int tag, int bytes, int way
         if (cache[i].tag == tag){
             cache[i].lastins = insnum;
             for (int k = 0; k < bytes; k++){
-                *(words + k) = cache[i].vals[blockoffset + k];
+                 words[k] = cache[i].vals[blockoffset + k];
             }
             return words;
         }
@@ -64,18 +65,18 @@ int* readcache(struct block* cache, int blockoffset, int tag, int bytes, int way
 
 bool setisfull(struct block* cache, int ways){
     for (int k = 0; k < ways; k++){
-        if (cache[k].tag == 0){
+        if (cache[k].valid == 0){
             return false;
         }
     }
     return true;
 }
 
-int targetindex(struct block* set[], int ways){
+int targetindex(struct block* set, int ways){
     int minval = set[0].lastins;
     int minindex = 0;
     for (int k = 0; k < ways; k++){
-        if (set[k] == NULL){
+        if (set[k].tag == 0){
             return k;
         }
         if (set[k].lastins < minval){
@@ -92,7 +93,7 @@ void writemem(int set[], int addr, char* val, int bytes){
         char byte[2];
         byte[0] = val[valind];
         byte[1] = val[valind + 1];
-        set[addr + k] == (int) strtol(byte, NULL, 16);
+        set[addr + k] = (int) strtol(byte, NULL, 16);
         valind+=2;
     }
 }
@@ -104,17 +105,16 @@ int* readmem(int set[], int addr, int bytes, int* words){
     return words;
 }
 
-void evictandreplace(struct block* cache[], int mem[], int tagnum, int insnum, int memblockindex, int blocknum, int indexnum, int index, int ways, char* wbehavior, bool setisfull, int bs){
-    struct block* newblock = (struct block*) malloc(sizeof(struct block));
-    memcpy(newblock->vals, mem + memblockindex, bs);
-    newblock->tag = tagnum;
-    newblock->lastins = insnum;
+void evictandreplace(struct block* cache, int mem[], int tagnum, int insnum, int memblockindex, int blocknum, int indexnum, int index, int ways, char* wbehavior, bool setisfull, int bs){
     int tindex = targetindex(cache, ways);
+    memcpy(cache[tindex].vals, mem + memblockindex, bs);
+    printf("%x\n", *(mem + memblockindex + 27));
+    cache[tindex].tag = tagnum;
+    cache[tindex].lastins = insnum;
     if (setisfull && (strcmp(wbehavior, "wb") == 0)){
-        int wbindex = (cache[tindex]->tag << (blocknum + indexnum)) + (index << (blocknum + indexnum));
-        memcpy(mem + wbindex, cache[tindex]->vals, bs);
+        int wbindex = (cache[tindex].tag << (blocknum + indexnum)) + (index << (blocknum + indexnum));
+        memcpy(mem + wbindex, cache[tindex].vals, bs);
     }
-    cache[tindex] = newblock; 
 }
 
 
@@ -130,10 +130,10 @@ int main(int argc, char* argv[]){
 
 
     struct block** cache;            //creating cache and main memory with proper dimensions
-    int mainmem[65536 * 4];
-    mainmem[0] = 1;
-    mainmem[1] = 2;
-    printf("%d %d", mainmem[0], mainmem[1]);
+    int mainmem[65536];
+    for (int k = 0; k < 65536; k++){
+        mainmem[k] = 0;
+    }
     cache = (struct block**) calloc(sets, sizeof(struct block*));
     for (int k = 0; k < sets; k++){
         cache[k] = (struct block*) calloc(ways, sizeof(struct block));
@@ -168,32 +168,37 @@ int main(int argc, char* argv[]){
         bool check = setisfull(cache[index], ways);
         if (strcmp("store", ins) == 0){
             bool hit = writecache(cache[index], blockoffset, tag, val, bytes, ways, inscount);
-            // if (strcmp(wbehavior, "wt") == 0){
-            //     writemem(mainmem, addr, val, bytes);
-            // }
+            if (strcmp(wbehavior, "wt") == 0){
+                writemem(mainmem, addr, val, bytes);
+            }
+
             if (hit){
                 strcpy(horm, "hit");
             }
-            // else{
-            //     strcpy(horm, "miss");
-            //     writemem(mainmem, addr, val, bytes);
-            //     evictandreplace(cache[index], mainmem, tag, inscount, memblockindex, blocknum, indexnum, index, ways, wbehavior, check, bs);
-            // }
+            else{
+                strcpy(horm, "miss");
+                writemem(mainmem, addr, val, bytes);
+                printf("%x\n", mainmem[addr + 1]);
+                evictandreplace(cache[index], mainmem, tag, inscount, memblockindex, blocknum, indexnum, index, ways, wbehavior, check, bs);
+            }
         }
-        // if (strcmp("load", ins) == 0){
-        //     readcache(cache[index], blockoffset, tag, size, ways, inscount, words);
-        //     if (words !=  NULL){
-        //         strcpy(horm, "hit");
-        //     }
-        //     else{
-        //         strcpy(horm, "miss");
-        //         readmem(mainmem, addr, size, words);
-        //         evictandreplace(cache[index], mainmem, tag, inscount, memblockindex, blocknum, indexnum, index, ways, wbehavior, check, bs);
-        //     }
-        // }
+        printf("%x%x", cache[index][0].vals[27], cache[index][0].vals[28]);
+        if (strcmp("load", ins) == 0){
+            readcache(cache[index], blockoffset, tag, size, ways, inscount, words);
+            if (words !=  NULL){
+                strcpy(horm, "hit");
+            }
+            else{
+                strcpy(horm, "miss");
+                readmem(mainmem, addr, size, words);
+                evictandreplace(cache[index], mainmem, tag, inscount, memblockindex, blocknum, indexnum, index, ways, wbehavior, check, bs);
+            }
+        }
         printf("%s %x %s ", ins, addr, horm);
-        for (int k = 0; k < size; k ++){
-            printf("%x", *(words + k));
+        if (strcmp("load", ins) == 0){
+            for (int k = 0; k < 4 * bytes; k+=4){
+                printf("%x", *(words + k));
+            }
         }
         printf("\n");
         inscount++;
